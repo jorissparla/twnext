@@ -1,6 +1,44 @@
 import React from "react";
+import { format, formatDistanceToNow as distanceInWordsToNow } from "date-fns";
+import _ from "lodash";
 
-const TenantCard = () => {
+const indexObj = {
+  PRD: 1,
+  TRN: 2,
+  TST: 3,
+  DEV: 4,
+  DEM: 5
+};
+
+const getTags = tenants =>
+  tenants
+    .map(t => {
+      const postfix = t.name.split("_")[1];
+      const index = indexObj[postfix] || 999;
+      const { tenant_status, operational_status, process_status } = t;
+      let tag = "";
+      let tooltip = "";
+      if (tenant_status) {
+        if (!(tenant_status === "active" && operational_status === "online" && process_status === "idle")) {
+          tag = `${tenant_status[0].toUpperCase()}-${operational_status[0].toUpperCase()}-${process_status.slice(0, 2).toUpperCase()}`;
+        }
+        tooltip = `${tenant_status}-${operational_status}-${process_status}`;
+      }
+      return { index, ...t, tag, tooltip };
+    })
+    .sort((a, b) => (a.index > b.index ? 1 : -1));
+
+const TenantCard = ({ details }) => {
+  const { customer, tenants } = details;
+  const farm = tenants[0]?.farm;
+  const prefix = tenants && tenants.length && tenants.length > 0 ? tenants[0].name.split("_")[0] : "";
+  const max = _.maxBy(tenants, t => t.lastupdated)?.lastupdated;
+  // console.log(max ? format(parseInt(max), "yyyMMdd") : "");
+  const max2 = max ? distanceInWordsToNow(parseInt(max)) : "";
+  const tags = getTags(tenants);
+  console.log("tags", tags);
+  // const prefix = tenants[0] ? (tenants[0].split("_") ? tenants[0].split("_")[0] : "") : "";
+  // console.log(tenants);
   const [isOn, toggle] = React.useState(false);
   return (
     <div className="w-full max-w-lg ">
@@ -12,19 +50,31 @@ const TenantCard = () => {
           <div className="rounded-full h-16 w-16 bg-green-300 text-green-800 p-3  flex items-center justify-center text-lg font-semibold shadow-lg">
             Live
           </div>
-          <div className="ml-8 flex flex-col">
-            <div className=" text-2xl font-bold text-gray-700">Ames Company</div>
-            <span className="text-gray-600 text-sm">Updated 14 days ago</span>
+          <div className="ml-8 flex flex-col overflow-hidden">
+            <div className=" text-2xl font-bold text-gray-700 overflow-hidden truncate">{customer.name || "Ames Company"}</div>
+            <span className="text-gray-600 text-sm">Updated {max2 || " 14 days"} ago</span>
           </div>
         </div>
         <div className="mt-6 flex justify-between items-center">
-          <div className="text-lg text-gray-700 uppercase font-semibold">Sydney</div>
-          <div className="uppercase text-gray-700 tracking-wider mr-4">Ames</div>
+          <div className="text-lg text-gray-700 uppercase font-semibold">{farm || "Sydney"}</div>
+          <div className="uppercase text-gray-700 tracking-wider mr-4">{prefix || ""}</div>
         </div>
         <div className="flex justify-between items-center mt-4">
-          <span className="text-xs text-white flex rounded-lg bg-indigo-500 uppercase px-2 py-1 mr-3  tracking-wider ">PRD:LNCE 2020.03</span>
+          {tags.map(({ id, name, version, tooltip, tag }) => {
+            let shortname = "";
+            if (customer === "Infor") {
+              shortname = name;
+            } else shortname = name.split("_")[1];
+            const color = shortname.endsWith("PRD") ? "rgba(46, 202, 19, 1)" : shortname.endsWith("TRN") ? "#1da1f2" : "rgba(0,0,0,0.5)";
+            return (
+              <span key={tag.index} className="text-xs text-white flex rounded-lg bg-indigo-500 uppercase px-2 py-1 mr-3  tracking-wider ">
+                {shortname}:{version}
+              </span>
+            );
+          })}
+          {/* <span className="text-xs text-white flex rounded-lg bg-indigo-500 uppercase px-2 py-1 mr-3  tracking-wider ">PRD:LNCE 2020.03</span>
           <span className="text-xs text-white flex rounded-lg bg-orange-500 uppercase px-2 py-1 mr-3 font-semibold">DEV:LNCE 2020.03</span>
-          <span className="text-xs text-white flex rounded-lg bg-blue-500 uppercase px-2 py-1 mr-3 font-semibold">TST:LNCE 2020.03</span>
+          <span className="text-xs text-white flex rounded-lg bg-blue-500 uppercase px-2 py-1 mr-3 font-semibold">TST:LNCE 2020.03</span> */}
         </div>
         <div className="border-t-2 border-gray-400 h-1 w-full mt-2"></div>
         <div className="ml-4 flex justify-between items-center mt-4">

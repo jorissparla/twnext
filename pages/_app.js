@@ -1,7 +1,8 @@
-import '../styles/index.css'
+import "../styles/index.css";
+import { withApollo } from "../lib/apollo";
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return <Component {...pageProps} />;
 }
 
-export default MyApp
+export default withApollo({ ssr: true })(MyApp);
