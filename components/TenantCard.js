@@ -3,18 +3,20 @@ import { format, formatDistanceToNow as distanceInWordsToNow } from "date-fns";
 import _ from "lodash";
 
 const indexObj = {
-  PRD: 1,
-  TRN: 2,
-  TST: 3,
-  DEV: 4,
-  DEM: 5
+  PRD: { id: 1, color: "bg-teal-500" },
+  TRN: { id: 2, color: "bg-blue-500" },
+  TST: { id: 3, color: "bg-orange-500" },
+  DEV: { id: 4, color: "bg-orange-500" },
+  DEM: { id: 5, color: "bg-orange-500" }
 };
 
 const getTags = tenants =>
   tenants
     .map(t => {
       const postfix = t.name.split("_")[1];
-      const index = indexObj[postfix] || 999;
+
+      const index = indexObj[postfix]?.id || 999;
+      const color = indexObj[postfix]?.color || "bg-teal-500";
       const { tenant_status, operational_status, process_status } = t;
       let tag = "";
       let tooltip = "";
@@ -24,12 +26,12 @@ const getTags = tenants =>
         }
         tooltip = `${tenant_status}-${operational_status}-${process_status}`;
       }
-      return { index, ...t, tag, tooltip };
+      return { index, color, ...t, tag, tooltip };
     })
     .sort((a, b) => (a.index > b.index ? 1 : -1));
 
 const TenantCard = ({ details }) => {
-  const { customer, tenants } = details;
+  const { customer, tenants, csm, pm, golivecomments, golivedate } = details;
   const farm = tenants[0]?.farm;
   const prefix = tenants && tenants.length && tenants.length > 0 ? tenants[0].name.split("_")[0] : "";
   const max = _.maxBy(tenants, t => t.lastupdated)?.lastupdated;
@@ -60,35 +62,33 @@ const TenantCard = ({ details }) => {
           <div className="uppercase text-gray-700 tracking-wider mr-4">{prefix || ""}</div>
         </div>
         <div className="flex justify-between items-center mt-4">
-          {tags.map(({ id, name, version, tooltip, tag }) => {
+          {tags.map(({ id, name, color, version, tooltip, tag }) => {
             let shortname = "";
             if (customer === "Infor") {
               shortname = name;
             } else shortname = name.split("_")[1];
-            const color = shortname.endsWith("PRD") ? "rgba(46, 202, 19, 1)" : shortname.endsWith("TRN") ? "#1da1f2" : "rgba(0,0,0,0.5)";
+            // const color = shortname.endsWith("PRD") ? "rgba(46, 202, 19, 1)" : shortname.endsWith("TRN") ? "#1da1f2" : "rgba(0,0,0,0.5)";
+            // const color="bg-teal-300"
             return (
-              <span key={tag.index} className="text-xs text-white flex rounded-lg bg-indigo-500 uppercase px-2 py-1 mr-3  tracking-wider ">
+              <span key={tag.index} className={`text-xs text-white flex rounded-lg  uppercase px-2 py-1 mr-3  tracking-wider ${color}`}>
                 {shortname}:{version}
               </span>
             );
           })}
-          {/* <span className="text-xs text-white flex rounded-lg bg-indigo-500 uppercase px-2 py-1 mr-3  tracking-wider ">PRD:LNCE 2020.03</span>
-          <span className="text-xs text-white flex rounded-lg bg-orange-500 uppercase px-2 py-1 mr-3 font-semibold">DEV:LNCE 2020.03</span>
-          <span className="text-xs text-white flex rounded-lg bg-blue-500 uppercase px-2 py-1 mr-3 font-semibold">TST:LNCE 2020.03</span> */}
         </div>
         <div className="border-t-2 border-gray-400 h-1 w-full mt-2"></div>
         <div className="ml-4 flex justify-between items-center mt-4">
           <div className="flex flex-col">
             <div className="text-gray-700 font-semibold">PM</div>
-            <div className="text-gray-700 text-sm text-left">PM note entered</div>
+            <div className="text-gray-700 text-sm text-left">{pm || "PM note entered"}</div>
           </div>
           <div className="flex flex-col">
             <div className="text-gray-700 font-semibold">CSM</div>
-            <div className="text-gray-700 text-sm text-left">CSM Not know</div>
+            <div className="text-gray-700 text-sm text-left">{csm || "CSM Not know"}</div>
           </div>
           <div className="flex flex-col">
             <div className="text-gray-700 font-semibold">Go Live Date</div>
-            <div className="text-gray-700 text-sm text-left">February 22nd, 2020</div>
+            <div className="text-gray-700 text-sm text-left">{format(parseInt(golivedate), "MMM, dd, yyyy") || "February 22nd, 2020"}</div>
           </div>
         </div>
         <div className="ml-2 flex justify-between items-center mt-6">
