@@ -48,18 +48,20 @@ const TenantCard = ({ details }) => {
         className="rounded shadow-lg m-4 bg-blue-100 p-4"
         style={{ backgroundImage: "linear-gradient(to right bottom,rgba(29, 161, 242, 0.4), white)" }}
       >
-        <div className="flex justify-start items-center">
-          <div className="rounded-full h-16 w-16 bg-green-300 text-green-800 p-3  flex items-center justify-center text-lg font-semibold shadow-lg">
-            Live
+        <div style={{ backgroundImage: "https://unsplash.com/photos/EIhQFo8kBbw" }}>
+          <div className="flex justify-start items-center">
+            <div className="rounded-full h-16 w-16 bg-green-300 text-green-800 p-3  flex items-center justify-center text-lg font-semibold shadow-lg">
+              Live
+            </div>
+            <div className="ml-8 flex flex-col overflow-hidden">
+              <div className=" text-2xl font-bold text-gray-700 overflow-hidden truncate">{customer.name || "Ames Company"}</div>
+              <span className="text-gray-600 text-sm">Updated {max2 || " 14 days"} ago</span>
+            </div>
           </div>
-          <div className="ml-8 flex flex-col overflow-hidden">
-            <div className=" text-2xl font-bold text-gray-700 overflow-hidden truncate">{customer.name || "Ames Company"}</div>
-            <span className="text-gray-600 text-sm">Updated {max2 || " 14 days"} ago</span>
+          <div className="mt-6 flex justify-between items-center">
+            <div className="text-lg text-gray-700 uppercase font-semibold">{farm || "Sydney"}</div>
+            <div className="uppercase text-gray-700 tracking-wider mr-4">{prefix || ""}</div>
           </div>
-        </div>
-        <div className="mt-6 flex justify-between items-center">
-          <div className="text-lg text-gray-700 uppercase font-semibold">{farm || "Sydney"}</div>
-          <div className="uppercase text-gray-700 tracking-wider mr-4">{prefix || ""}</div>
         </div>
         <div className="flex justify-between items-center mt-4">
           {tags.map(({ id, name, color, version, tooltip, tag }) => {
