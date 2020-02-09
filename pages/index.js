@@ -1,10 +1,18 @@
-import Nav from '../components/nav'
+import Nav from "../components/nav";
+import LoginForm from "../components/LoginForm";
+import TenantCard from "../components/TenantCard";
+import SupportCard from "../components/SupportCard";
 
 export default () => (
-  <div>
+  <div className="bg-gray-200 fixed inset-0 h-full w-full ">
     <Nav />
-    <div className="hero">
-      <h1 className="title">Next.js + Tailwind CSS</h1>
+    <LoginForm />
+    <SupportCard />
+    <div className="flex flex-wrap">
+      <TenantCard />
+      <TenantCard />
+      <TenantCard />
+      <TenantCard />
     </div>
   </div>
-)
+);
