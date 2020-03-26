@@ -38,7 +38,7 @@ const TenantCard = ({ details }) => {
   // console.log(max ? format(parseInt(max), "yyyMMdd") : "");
   const max2 = max ? distanceInWordsToNow(parseInt(max)) : "";
   const tags = getTags(tenants);
-  console.log("tags", tags);
+  // console.log("tags", tags);
   // const prefix = tenants[0] ? (tenants[0].split("_") ? tenants[0].split("_")[0] : "") : "";
   // console.log(tenants);
   const [isOn, toggle] = React.useState(false);

@@ -28,7 +28,7 @@ const TenantList = () => {
   const { loading, data } = useQuery(ALL_TENANT_DETAILS);
 
   if (loading) return <div>Loading</div>;
-  console.log(data);
+  console.table(data.tenants);
   return (
     <div className="bg-gray-200 h-full w-full flex flex-wrap">
       {data.tenants
