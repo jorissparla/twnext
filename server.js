@@ -9,12 +9,13 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const httpsOptions = {
-  key: fs.readFileSync('./certificates/host.key'),
-  cert: fs.readFileSync('./certificates/host.cert')
+  key: fs.readFileSync('./certificates/localhost.key'),
+  cert: fs.readFileSync('./certificates/localhost.crt')
 };
 
 app.prepare().then(() => {
   createServer(httpsOptions, (req, res) => {
+    console.log('creating server ')
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
     
